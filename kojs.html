@@ -110,14 +110,30 @@
 			return sumValue;
 		}
 
-		function UserViewModel() {
+		function ViewModel() {
 
 			// Declare observable ↓↓↓
 			self.userCondition = ko.observableArray();
 			self.removeUserList    = ko.observableArray();
 
-			self.sumAgeAvailableList = ko.observable(0);
-			self.sumAgeRemoveList    = ko.observable(0);
+			self.sumAgeAvailableList = ko.pureComputed({
+				read: function () {
+					return sumAge(self.userCondition);
+				},
+				write: function (value) {
+					return value;
+				},
+				owner: this
+			});
+			self.sumAgeRemoveList = ko.pureComputed({
+				read: function () {
+					return sumAge(self.removeUserList);
+				},
+				write: function (value) {
+					return value;
+				},
+				owner: this
+			});
 
 			self.fName = ko.observable("");
 			self.lName  = ko.observable("");
@@ -154,7 +170,6 @@
 				self.iAge(user.age);
 				self.fullName(user.firstName + " " + user.lastName);
 
-				// Calculate age rank ↓↓↓
 				if (user.age() >= 62)
 					self.teenOrRetire("Retired ");
 				else if (user.age() >= 13 && user.age() <= 19)
@@ -174,12 +189,6 @@
 
 				self.sumAgeRemoveList(sumAge(removeUserList));
 
-				// Clear textbox ↓↓↓
-				self.fName("");
-				self.lName("");
-				self.fullName("");
-				self.iAge("");
-				self.teenOrRetire("");
 			}
 
 			// Undo ↓↓↓
@@ -191,16 +200,10 @@
 
 				self.sumAgeRemoveList(sumAge(removeUserList));
 
-				// Clear textbox ↓↓↓
-				self.fName("");
-				self.lName("");
-				self.fullName("");
-				self.iAge("");
-				self.teenOrRetire("");
 			}
 		}
 
-		// Simulate data from API ↓↓↓
+		// Data
 		self.user = [
 			{ firstName: 'Bert', lastName: 'Bertington' },
 			{ firstName: 'Charles', lastName: 'Charlesforth' },
@@ -331,7 +334,7 @@
 			{ firstName: 'Liesl', lastName: 'Medeiros' },
 			{ firstName: 'Patrisha', lastName: 'Mcclain' }
 		];
-		ko.applyBindings(new UserViewModel());
+		ko.applyBindings(new ViewModel());
     </script>
 </body>
 </html>
