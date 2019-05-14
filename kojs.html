@@ -1,0 +1,337 @@
+<html lang="en">
+<head>
+    <script src="knockout-3.5.0.js" type="text/javascript"></script>
+	<style>
+			table, th, td {
+			  border: 1px solid black;
+			}
+		</style>
+</head>
+<body>
+    <main>
+        <div class="container">    
+            <hr>
+                <div style="width:40%;float:left">
+                    <h2>Available Person List</h2>
+                        <div>
+                            <table id="available-table" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th><strong>First Name</strong></th>
+                                        <th><strong>Last Name</strong></th>
+                                        <th><strong>Age</strong></th>
+                                        <th><strong>Action</strong></th>
+                                    </tr>
+                                </thead>
+                                <tbody data-bind="foreach: userCondition">
+                                    <tr data-bind="click: select">
+                                        <td data-bind="text: firstName"></td>
+                                        <td data-bind="text: lastName"></td>
+                                        <td data-bind="text: age" class="text-danger"></td>
+                                        <th><button data-bind="click: remove">Remove</button>
+                                        </th>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" align="center">
+                                            <i>Sum Ages:</i> <strong class="text-danger font-weigh-bold"
+                                                data-bind="text: sumAgeAvailableList"></strong>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+							<div>
+								<h3>Person Info</h3>
+								<b>- First name: </b> <input type="text" style="margin-bottom:30px"
+									data-bind="value: fName(), valueUpdate: 'afterkeydown'">
+								<br>
+								<b>- Last name: </b> <input type="text" style="margin-bottom:30px"
+									data-bind="value: lName(), valueUpdate: 'afterkeydown'">
+								<br>
+								<b>- Age: </b>
+								<input type="text" data-bind="value: iAge(), valueUpdate: 'afterkeydown'"
+									style="margin-bottom:30px">
+								<br />
+							</div>
+							<div>
+								<h3>Intro</h3>                  
+								<div style="margin-top:8%">
+									<i data-bind="text: fullName"></i> <strong><i data-bind="text: teenOrRetire"></i></strong>
+									<br>
+								</div>
+							</div>
+                        </div>
+					</div>
+					<div style="width:40%;float: left;margin-left:100px">
+						<h2>Remove Person List</h2>
+							<table id="remove-table" style="width:100%;float: right">
+								<thead>
+									<tr>
+										<td><strong>First Name</strong></td>
+										<td><strong>Last Name</strong></td>
+										<td><strong>Age</strong></td>
+										<td><strong>Feature</strong></td>
+									</tr>
+								</thead>
+								<tbody data-bind="foreach: removeUserList">
+									<tr data-bind="click: select">
+										<td data-bind="text: firstName()"></td>
+										<td data-bind="text: lastName()"></td>
+										<td data-bind="text: age()"></td>
+										<td><button data-bind="click: undo">Undo</button>
+										</td>
+									</tr>
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="4" align="center">
+											<i>Sum Ages:</i> <strong 
+												data-bind="text: sumAgeRemoveList"></strong>
+										</td>
+									</tr>
+								</tfoot>
+							</table>
+					</div>			
+			</div>
+    <script>
+		function createUser(firstName, lastName, age) {
+			var self = this;
+			self.firstName = ko.observable(firstName);
+			self.lastName = ko.observable(lastName);
+			self.age = ko.observable(age);
+		}
+
+		function sumAge(array) {
+			let sumValue = 0;
+			array().forEach(item => {
+				sumValue += parseInt(item.age());
+			});
+			return sumValue;
+		}
+
+		function UserViewModel() {
+
+			// Declare observable ↓↓↓
+			self.userCondition = ko.observableArray();
+			self.removeUserList    = ko.observableArray();
+
+			self.sumAgeAvailableList = ko.observable(0);
+			self.sumAgeRemoveList    = ko.observable(0);
+
+			self.fName = ko.observable("");
+			self.lName  = ko.observable("");
+			self.iAge = ko.observable("");
+			self.teenOrRetire = ko.observable("");
+
+			self.fullName = ko.pureComputed({
+				read: function () {
+					if (typeof self.fName() == 'function' && typeof self.lName() == 'function') {
+						return self.fName()() + " " + self.lName()() + " is";
+					}
+				},
+				write: function (value) {
+					return value;
+				},
+				owner: this
+			});
+
+			// Display data ↓↓↓
+			self.user.forEach(user => {
+				let randomAge = Math.floor(Math.random() * 99) + 1;
+
+				// Filter user with fullname length bigger than 12 and firstName begin with 'M' ↓↓↓
+				if (user.firstName.length + user.lastName.length > 12 && user.firstName.charAt(0) == "M") {
+					self.userCondition.push(new createUser(user.firstName, user.lastName, randomAge));
+					sumAgeAvailableList(sumAge(userCondition));
+				}
+			});
+
+			// Select ↓↓↓
+			self.select = function (user) {
+				self.fName(user.firstName);
+				self.lName(user.lastName);
+				self.iAge(user.age);
+				self.fullName(user.firstName + " " + user.lastName);
+
+				// Calculate age rank ↓↓↓
+				if (user.age() >= 62)
+					self.teenOrRetire("Retired ");
+				else if (user.age() >= 13 && user.age() <= 19)
+					self.teenOrRetire("Teenage");
+				else if (user.age() < 13)
+					self.teenOrRetire("Kid");
+				else
+					self.teenOrRetire("Adult");
+			}
+
+			// Remove ↓↓↓
+			self.remove = function (user) {
+				self.userCondition.remove(user);
+				self.removeUserList.push(user);
+
+				self.sumAgeAvailableList(sumAge(userCondition));
+
+				self.sumAgeRemoveList(sumAge(removeUserList));
+
+				// Clear textbox ↓↓↓
+				self.fName("");
+				self.lName("");
+				self.fullName("");
+				self.iAge("");
+				self.teenOrRetire("");
+			}
+
+			// Undo ↓↓↓
+			self.undo = function (user) {
+				self.removeUserList.remove(user);
+				self.userCondition.push(user);
+
+				self.sumAgeAvailableList(sumAge(userCondition));
+
+				self.sumAgeRemoveList(sumAge(removeUserList));
+
+				// Clear textbox ↓↓↓
+				self.fName("");
+				self.lName("");
+				self.fullName("");
+				self.iAge("");
+				self.teenOrRetire("");
+			}
+		}
+
+		// Simulate data from API ↓↓↓
+		self.user = [
+			{ firstName: 'Bert', lastName: 'Bertington' },
+			{ firstName: 'Charles', lastName: 'Charlesforth' },
+			{ firstName: 'Denise', lastName: 'Dentiste' },
+			{ firstName: 'Lilith', lastName: 'Ruiz' },
+			{ firstName: 'Cynthia', lastName: 'Kirk' },
+			{ firstName: 'Keymoni', lastName: 'Whitaker' },
+			{ firstName: 'Greenly', lastName: 'Lowery' },
+			{ firstName: 'Chloe', lastName: 'Montes' },
+			{ firstName: 'Lakelynn', lastName: 'Brindle' },
+			{ firstName: 'Kaylor', lastName: 'Lawless' },
+			{ firstName: 'Irelynn', lastName: 'Miles' },
+			{ firstName: 'Andriana', lastName: 'Cornett' },
+			{ firstName: 'Launa', lastName: 'Castillo' },
+			{ firstName: 'Loriana', lastName: 'Swanson' },
+			{ firstName: 'Carmela', lastName: 'Viers' },
+			{ firstName: 'Emilia', lastName: 'Mcintyre' },
+			{ firstName: 'Shiya', lastName: 'Babb' },
+			{ firstName: 'Marcial', lastName: 'Bise' },
+			{ firstName: 'Kalista', lastName: 'Morrow' },
+			{ firstName: 'Martina', lastName: 'Schindler' },
+			{ firstName: 'Valeria', lastName: 'Manzo' },
+			{ firstName: 'Valentina', lastName: 'Ingalls' },
+			{ firstName: 'Jacayla', lastName: 'Parsons' },
+			{ firstName: 'Kimorah', lastName: 'Dodge' },
+			{ firstName: 'Areli', lastName: 'Kaplan' },
+			{ firstName: 'Vayda', lastName: 'Shunk' },
+			{ firstName: 'Ivania', lastName: 'Youngman' },
+			{ firstName: 'Neyla', lastName: 'Woodley' },
+			{ firstName: 'Neftali', lastName: 'Abell' },
+			{ firstName: 'Lacey', lastName: 'Erdman' },
+			{ firstName: 'Colleen', lastName: 'Johnston' },
+			{ firstName: 'London', lastName: 'Springer' },
+			{ firstName: 'Maddoxx', lastName: 'Hartig' },
+			{ firstName: 'Jadyne', lastName: 'Hebert' },
+			{ firstName: 'Graceyn', lastName: 'Atwell' },
+			{ firstName: 'Nabria', lastName: 'Bonner' },
+			{ firstName: 'Jourdin', lastName: 'Pepper' },
+			{ firstName: 'Claire', lastName: 'Brannan' },
+			{ firstName: 'Annie', lastName: 'Bond' },
+			{ firstName: 'Madalynn', lastName: 'Crow' },
+			{ firstName: 'Jaslyn', lastName: 'Swartz' },
+			{ firstName: 'Jayce', lastName: 'Cannon' },
+			{ firstName: 'Haylei', lastName: 'Kennedy' },
+			{ firstName: 'Alena', lastName: 'Cornett' },
+			{ firstName: 'Nada', lastName: 'Forcier' },
+			{ firstName: 'Emelia', lastName: 'Mejia' },
+			{ firstName: 'Kanon', lastName: 'Isaac' },
+			{ firstName: 'Fatima', lastName: 'Ramsey' },
+			{ firstName: 'Monzerrat', lastName: 'Wallace' },
+			{ firstName: 'Joud', lastName: 'Puckett' },
+			{ firstName: 'Bayla', lastName: 'Wortham' },
+			{ firstName: 'Arsenio', lastName: 'Gearhart' },
+			{ firstName: 'Quincey', lastName: 'Lunceford' },
+			{ firstName: 'Nayara', lastName: 'Burnett' },
+			{ firstName: 'Riya', lastName: 'Yost' },
+			{ firstName: 'Kleigh', lastName: 'Farmer' },
+			{ firstName: 'Tyana', lastName: 'Cavender' },
+			{ firstName: 'Nadia', lastName: 'Hayes' },
+			{ firstName: 'Christepher', lastName: 'Jonas' },
+			{ firstName: 'Briseyda', lastName: 'Goddard' },
+			{ firstName: 'Ivis', lastName: 'Kershner' },
+			{ firstName: 'Viviana', lastName: 'Lacroix' },
+			{ firstName: 'Shaurya', lastName: 'Fletcher' },
+			{ firstName: 'Staley', lastName: 'Tondreau' },
+			{ firstName: 'Alayla', lastName: 'Mays' },
+			{ firstName: 'Velvet', lastName: 'Mejia' },
+			{ firstName: 'Patience', lastName: 'Goodrich' },
+			{ firstName: 'Caylee', lastName: 'Depriest' },
+			{ firstName: 'Brockton', lastName: 'Barnette' },
+			{ firstName: 'Malasia', lastName: 'Bradshaw' },
+			{ firstName: 'Mia', lastName: 'Phillips' },
+			{ firstName: 'Kaelyn', lastName: 'Bray' },
+			{ firstName: 'Angelina', lastName: 'Mccarthy' },
+			{ firstName: 'Sariyah', lastName: 'Mast' },
+			{ firstName: 'Linden', lastName: 'Laird' },
+			{ firstName: 'Charlize', lastName: 'Raines' },
+			{ firstName: 'Joley', lastName: 'Lujan' },
+			{ firstName: 'Miraya', lastName: 'Kaye' },
+			{ firstName: 'Anaya', lastName: 'Navarrete' },
+			{ firstName: 'Callie', lastName: 'Robertson' },
+			{ firstName: 'Mariah', lastName: 'Obrien' },
+			{ firstName: 'Ailene', lastName: 'Engelhardt' },
+			{ firstName: 'Anaiah', lastName: 'Mccray' },
+			{ firstName: 'Alene', lastName: 'Buckingham' },
+			{ firstName: 'Lyllian', lastName: 'Gilley' },
+			{ firstName: 'Kyna', lastName: 'Wang' },
+			{ firstName: 'Bianka', lastName: 'Guerrero' },
+			{ firstName: 'Angela', lastName: 'Johnston' },
+			{ firstName: 'Isabellah', lastName: 'Edison' },
+			{ firstName: 'Kayci', lastName: 'Brice' },
+			{ firstName: 'Faizon', lastName: 'Quintana' },
+			{ firstName: 'Riya', lastName: 'Tallent' },
+			{ firstName: 'Ada', lastName: 'Stampley' },
+			{ firstName: 'Anica', lastName: 'Wallace' },
+			{ firstName: 'Yadiel', lastName: 'Mata' },
+			{ firstName: 'Leilani', lastName: 'Meadows' },
+			{ firstName: 'Britney', lastName: 'Lynn' },
+			{ firstName: 'Gennaro', lastName: 'Tovar' },
+			{ firstName: 'Celene', lastName: 'Staton' },
+			{ firstName: 'Joleah', lastName: 'Flaugher' },
+			{ firstName: 'Marlen', lastName: 'Justice' },
+			{ firstName: 'Isys', lastName: 'Babineaux' },
+			{ firstName: 'Perri', lastName: 'Wynn' },
+			{ firstName: 'Beckem', lastName: 'Currie' },
+			{ firstName: 'Madison', lastName: 'Flynn' },
+			{ firstName: 'Ervin', lastName: 'Vega' },
+			{ firstName: 'Gabriela', lastName: 'Mcclung' },
+			{ firstName: 'Aissa', lastName: 'Glenn' },
+			{ firstName: 'Breasia', lastName: 'Dailey' },
+			{ firstName: 'Annabella', lastName: 'Beil' },
+			{ firstName: 'Payden', lastName: 'Boyd' },
+			{ firstName: 'Breylin', lastName: 'Sherman' },
+			{ firstName: 'Kaylin', lastName: 'Perry' },
+			{ firstName: 'Ariana', lastName: 'Herbert' },
+			{ firstName: 'Isela', lastName: 'Vinci' },
+			{ firstName: 'Keturah', lastName: 'Buford' },
+			{ firstName: 'Alayah', lastName: 'Cuadrado' },
+			{ firstName: 'Nikkita', lastName: 'Mcfarland' },
+			{ firstName: 'Amarie', lastName: 'Ezzell' },
+			{ firstName: 'Aurelius', lastName: 'Chan' },
+			{ firstName: 'Alexsa', lastName: 'Jude' },
+			{ firstName: 'Xochilt', lastName: 'Moshier' },
+			{ firstName: 'Anastazia', lastName: 'Cassell' },
+			{ firstName: 'Pantera', lastName: 'Chambers' },
+			{ firstName: 'Sophia', lastName: 'Colbert' },
+			{ firstName: 'Mckayla', lastName: 'Benavidez' },
+			{ firstName: 'Liesl', lastName: 'Medeiros' },
+			{ firstName: 'Patrisha', lastName: 'Mcclain' }
+		];
+		ko.applyBindings(new UserViewModel());
+    </script>
+</body>
+</html>
