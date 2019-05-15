@@ -43,7 +43,7 @@
 							<div>
 								<h3>Person Info</h3>
 								<b>- First name: </b> <input type="text" style="margin-bottom:30px"
-									data-bind="value: fName(), valueUpdate: 'afterkeydown'">
+									data-bind="value: selectedUser.fName, valueUpdate: 'afterkeydown'">
 									<span data-bind='visible: fName().hasError, text: fName().validationMessage'></span>
 								<br>
 								<b>- Last name: </b> <input type="text" style="margin-bottom:30px"
@@ -208,10 +208,12 @@
 
 			// Select ↓↓↓
 			self.select = function (user) {
-				self.fName(user.firstName);
-				self.lName(user.lastName);
-				self.iAge(user.age);
-				self.saveItem(user);
+				self.selectedUser(user);
+				self.selectedUser().fName();
+				<!-- self.fName(user.firstName); -->
+				<!-- self.lName(user.lastName); -->
+				<!-- self.iAge(user.age); -->
+				<!-- self.saveItem(user); -->
 				self.fullName(user.firstName + " " + user.lastName);
 
 				if (user.age() >= 62)
