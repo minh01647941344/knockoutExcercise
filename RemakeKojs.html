@@ -16,11 +16,11 @@
                         <div>
                             <table id="available-table" style="width:100%">
                                 <thead>
-                                    <tr>
-                                        <th><strong>First Name</strong></th>
-                                        <th><strong>Last Name</strong></th>
-                                        <th><strong>Age</strong></th>
-                                        <th><strong>Action</strong></th>
+                                    <tr align="center">
+                                        <td><strong>First Name</strong></td>
+                                        <td><strong>Last Name</strong></td>
+                                        <td><strong>Age</strong></td>
+                                        <td><strong>Action</strong></td>
                                     </tr>
                                 </thead>
                                 <tbody data-bind="foreach: userCondition">
@@ -28,8 +28,8 @@
                                         <td data-bind="text: firstName"></td>
                                         <td data-bind="text: lastName"></td>
                                         <td data-bind="text: age"></td>
-                                        <th><button data-bind="click: $parent.removeUser">Remove</button>
-                                        </th>
+                                        <td align="center"><button data-bind="click: $parent.removeUser">Remove</button>
+                                        </td>
                                     </tr>
                                 </tbody>
                                 <tfoot>
@@ -70,7 +70,7 @@
 						<h2>Remove Person List</h2>
 							<table id="remove-table" style="width:100%;float: right">
 								<thead>
-									<tr>
+									<tr align="center">
 										<td><strong>First Name</strong></td>
 										<td><strong>Last Name</strong></td>
 										<td><strong>Age</strong></td>
@@ -82,7 +82,7 @@
 										<td data-bind="text: firstName"></td>
 										<td data-bind="text: lastName"></td>
 										<td data-bind="text: age"></td>
-										<td><button data-bind="click: $parent.undoUser">Undo</button>
+										<td align="center"><button data-bind="click: $parent.undoUser">Undo</button>
 										</td>
 									</tr>
 								</tbody>
@@ -201,8 +201,10 @@
             //Sum Age Available
             var totalAge= function (array){
                 var sumValue = 0;
-                array().forEach(item => {
-                    sumValue += parseInt(item.age());
+                array().forEach(item => {					
+					if(item.age()){
+						sumValue += parseInt(item.age());
+					}
                 });
                 return sumValue;
             }
@@ -280,6 +282,7 @@
 				//feature of list
                 removeUser: function(item){ 
                     exChange(ViewModel.userCondition,ViewModel.removeUserList,item);
+					<!-- ViewModel.selectedItem(new createUser('Choose user!','Choose user!',0)); -->
                 },
                 undoUser: function(item){ 
                     exChange(ViewModel.removeUserList,ViewModel.userCondition,item);
