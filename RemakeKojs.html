@@ -44,7 +44,7 @@
 								<h3>Person Info</h3>
 								<b>- First name: </b> <input type="text" style="margin-bottom:30px"
 									data-bind="value: selectedItem().firstName, valueUpdate: 'afterkeydown'">
-									<span data-bind='visible: selectedItem().firstName.hasError, text: selectedItem().firstName.validationMessage'></span>
+									<span data-bind='visible: selectedItem().firstName.hasError, text: selectedItem().firstName.validationMessage'></span>									
 								<br>
 								<b>- Last name: </b> <input type="text" style="margin-bottom:30px"
 									data-bind="value: selectedItem().lastName, valueUpdate: 'afterkeydown'">
@@ -52,10 +52,11 @@
 								<br>
 								<b>- Age: </b>
 								<input type="text" data-bind="value: selectedItem().age, valueUpdate: 'afterkeydown'"
-									style="margin-bottom:30px">
-									<span data-bind='visible: selectedItem().age.hasError, text: selectedItem().age.validationMessage'></span>
+									style="margin-bottom:30px">	
+								<span data-bind='visible: selectedItem().age.hasError, text: selectedItem().age.validationMessage'></span>									
 								<br />
 							</div>
+							
 							<div>
 								<h3>Intro</h3>                  
 								<div style="margin-top:2%">
@@ -96,27 +97,55 @@
 					</div>			
             </div>
         <script>
-            ko.extenders.logChange = function(target, option) {
+            ko.extenders.logChange = function(target,option){
                 target.hasError = ko.observable(false);
                 target.validationMessage = ko.observable(false);
-				console.log(target());
-				
                 function validate(newValue){
-					<!-- if(target().firstName().charAt(0) == 'M'){ -->
-
-					<!-- }else{ -->
-
-					<!-- } -->
+					 if(option == 'fName'){
+                        if(newValue.charAt(0) == 'M'){
+                            if(newValue.length < 5 || newValue.length > 10){
+                                target.hasError(true);
+                                target.validationMessage("Length is 5 - 10 char!");
+                            }
+                        }else{
+                            target.hasError(true);
+                            target.validationMessage("This field start with 'M'");
+                        }
+                    }
+                    
+                    if(option == 'lName'){
+                        if(newValue.length < 5 || newValue.length > 10){
+                            target.hasError(true);
+                            target.validationMessage("Length is 5 - 10 char!");
+                        }else{
+                            target.hasError(false);
+                            target.validationMessage("");
+                        }
+                    }
+                    
+                    if(option == 'age'){
+                        if(parseInt(newValue) < 1 || parseInt(newValue) > 99){
+                            target.hasError(true);
+                            target.validationMessage("This field is between 1 - 99");
+						}else{
+                            target.hasError(false);
+                            target.validationMessage("");
+                        }
+					}
                 }
+
+				
                 validate(target());
+				
                 target.subscribe(validate);
+				
                 return target;
             }
             //Fake constructor
             function createUser(firstName,lastName,age){
-                this.firstName = ko.observable(firstName);
-                this.lastName = ko.observable(lastName);
-                this.age = ko.observable(age);
+                this.firstName = ko.observable(firstName).extend({logChange : "fName"});
+                this.lastName = ko.observable(lastName).extend({logChange : "lName"});
+                this.age = ko.observable(age).extend({logChange : "age"});
             }
             //Get Data
             var filterArray = function (){
@@ -211,7 +240,7 @@
 				//Declare
                 userCondition: ko.observableArray(filterArray()),
                 removeUserList: ko.observableArray([]),
-                selectedItem: ko.observable(new createUser('Choose user!','Choose user!',90)).extend({logChange: "selected"}),
+                selectedItem: ko.observable(new createUser('Choose user!','Choose user!',0)),//.extend({required: true}),
 				
 				//sum age of Available User List
                 sumAgeAvailableList: ko.pureComputed({
