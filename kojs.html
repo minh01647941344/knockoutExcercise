@@ -80,27 +80,28 @@
 		<div style="width:48%">
 			<label for="basic-url" style="font-size: 20px; color: blue">Person Info</label>
 			<div class="input-group">
+				<span class="input-group-addon" id="basic-addon1">First Name</span>
 				<input type="text" class="form-control" placeholder="Choose user" aria-describedby="basic-addon2"
 					data-bind="value: selectedItem().firstName, valueUpdate: 'afterkeydown'">
-				<span class="input-group-addon" id="basic-addon1">First Name</span>
+				<span class="input-group-addon" style="color: #fff;	background-color: #d9534f; border-color: #d43f3a"
+					data-bind='visible: selectedItem().firstName.hasError, text: selectedItem().firstName.validationMessage'></span>
 			</div>
-			<span
-				data-bind='visible: selectedItem().firstName.hasError, text: selectedItem().firstName.validationMessage'></span>
 			<br>
 			<div class="input-group">
+				<span class="input-group-addon" id="basic-addon2">Last Name</span>
 				<input type="text" class="form-control" placeholder="Choose user" aria-describedby="basic-addon2"
 					data-bind="value: selectedItem().lastName, valueUpdate: 'afterkeydown'">
-				<span class="input-group-addon" id="basic-addon2">Last Name</span>
+				<span class="input-group-addon" style="color: #fff;	background-color: #d9534f; border-color: #d43f3a"
+					data-bind='visible: selectedItem().lastName.hasError, text: selectedItem().lastName.validationMessage'></span>
 			</div>
-			<span
-				data-bind='visible: selectedItem().lastName.hasError, text: selectedItem().lastName.validationMessage'></span>
 			<br>
 			<div class="input-group">
+				<span class="input-group-addon" id="basic-addon3">User's Age</span>
 				<input type="text" class="form-control" aria-describedby="basic-addon2" placeholder="Choose user"
 					data-bind="value: selectedItem().age, valueUpdate: 'afterkeydown'">
-				<span class="input-group-addon" id="basic-addon3">User's Age</span>
+				<span class="input-group-addon" style="color: #fff;	background-color: #d9534f; border-color: #d43f3a"
+					data-bind='visible: selectedItem().age.hasError, text: selectedItem().age.validationMessage'></span>
 			</div>
-			<span data-bind='visible: selectedItem().age.hasError, text: selectedItem().age.validationMessage'></span>
 			<br>
 			<label for="basic-url" style="font-size: 20px; color:blue">Introduce</label>
 			<div class="input-group">
@@ -114,17 +115,20 @@
 <script>
 	ko.extenders.logChange = function (target, option) {
 		target.hasError = ko.observable(false);
-		target.validationMessage = ko.observable(false);
+		target.validationMessage = ko.observable("");
 		function validate(newValue) {
 			if (option == 'fName') {
 				if (newValue.charAt(0) == 'M') {
 					if (newValue.length < 5 || newValue.length > 10) {
 						target.hasError(true);
 						target.validationMessage("Length is 5 - 10 char!");
+					}else{
+						target.hasError(false);
+						target.validationMessage("");
 					}
 				} else {
 					target.hasError(true);
-					target.validationMessage("This field start with 'M'");
+					target.validationMessage("The first name start with 'M'");
 				}
 			}
 
@@ -139,10 +143,11 @@
 			}
 
 			if (option == 'age') {
-				let checkNull = parseInt(newValue);
-				if (parseInt(newValue) < 1 || parseInt(newValue) > 99) {
+				debugger
+				let number = 0 + newValue;
+				if (parseInt(newValue) < 1 || parseInt(newValue) > 99 || number == "0") {
 					target.hasError(true);
-					target.validationMessage("This field is between 1 - 99");
+					target.validationMessage("The age is between 1 - 99");
 				} else {
 					target.hasError(false);
 					target.validationMessage("");
