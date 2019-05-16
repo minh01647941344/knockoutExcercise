@@ -1,257 +1,172 @@
 <html lang="en">
+
 <head>
-    <script src="knockout-3.5.0.js" type="text/javascript"></script>
-	<style>
-			table, th, td {
-			  border: 1px solid black;
-			}
-		</style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="library/knockout-3.5.0.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
+	<script src="css/jquery-3.3.1.min.js" type="text/javascript"></script>
 </head>
+
 <body>
-    <main>
-        <div class="container">    
-            <hr>
-                <div style="width:40%;float:left">
-                    <h2>Available Person List</h2>
-                        <div>
-                            <table id="available-table" style="width:100%">
-                                <thead>
-                                    <tr>
-                                        <th><strong>First Name</strong></th>
-                                        <th><strong>Last Name</strong></th>
-                                        <th><strong>Age</strong></th>
-                                        <th><strong>Action</strong></th>
-                                    </tr>
-                                </thead>
-                                <tbody data-bind="foreach: userCondition">
-                                    <tr data-bind="click: $parent.select">
-                                        <td data-bind="text: firstName"></td>
-                                        <td data-bind="text: lastName"></td>
-                                        <td data-bind="text: age" class="text-danger"></td>
-                                        <th><button data-bind="click: $parent.remove">Remove</button>
-                                        </th>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="4" align="center">
-                                            <i>Sum Ages:</i> <strong data-bind="text: sumAgeAvailableList"></strong>
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-							<div>
-								<h3>Person Info</h3>
-								<b>- First name: </b> <input type="text" style="margin-bottom:30px"
-									data-bind="value: fName(), valueUpdate: 'afterkeydown'">
-									<span data-bind='visible: fName().hasError, text: fName().validationMessage'></span>
-								<br>
-								<b>- Last name: </b> <input type="text" style="margin-bottom:30px"
-									data-bind="value: lName(), valueUpdate: 'afterkeydown'">
-									<span data-bind='visible: lName().hasError, text: lName().validationMessage'></span>
-								<br>
-								<b>- Age: </b>
-								<input type="text" data-bind="value: iAge(), valueUpdate: 'afterkeydown'"
-									style="margin-bottom:30px">
-									<span data-bind='visible: iAge().hasError, text: iAge().validationMessage'></span>
-								<br />
-							</div>
-							<div>
-								<h3>Intro</h3>                  
-								<div style="margin-top:8%">
-									<i data-bind="text: fullName"></i> <strong><i data-bind="text: teenOrRetire"></i></strong>
-									<br>
-								</div>
-							</div>
-                        </div>
-					</div>
-					<div style="width:40%;float: left;margin-left:100px">
-						<h2>Remove Person List</h2>
-							<table id="remove-table" style="width:100%;float: right">
-								<thead>
-									<tr>
-										<td><strong>First Name</strong></td>
-										<td><strong>Last Name</strong></td>
-										<td><strong>Age</strong></td>
-										<td><strong>Feature</strong></td>
-									</tr>
-								</thead>
-								<tbody data-bind="foreach: removeUserList">
-									<tr data-bind="click: $parent.select">
-										<td data-bind="text: firstName()"></td>
-										<td data-bind="text: lastName()"></td>
-										<td data-bind="text: age()"></td>
-										<td><button data-bind="click: $parent.undo">Undo</button>
-										</td>
-									</tr>
-								</tbody>
-								<tfoot>
-									<tr>
-										<td colspan="4" align="center">
-											<i>Sum Ages:</i> <strong data-bind="text: sumAgeRemoveList"></strong>
-										</td>
-									</tr>
-								</tfoot>
-							</table>
-					</div>			
+	<div class="container">
+		<div class="page-header">
+			<h1><strong style="color:rgb(20, 153, 214)">SCC Internship</strong><small><i> We make IT work</i></small>
+			</h1>
+		</div>
+		<div class="panel panel-info" style="float: left; margin-top: 2%; width:48%">
+			<div class="panel-heading">
+				<h3>Available Person List</h3>
 			</div>
-    <script>
-		ko.extenders.logChange = function(target, option) {
-			target.hasError = ko.observable();
-			target.validationMessage = ko.observable();
-			
-			function validate(newValue){
-				if(option == 'first name'){
-					if(newValue.charAt(0) == 'M'){
-						if(newValue.length < 5 || newValue.length > 10){
-							target.hasError(true);
-							target.validationMessage("Length is 5 - 10 char!");
-						}
-					}else{
-						target.hasError(true);
-						target.validationMessage("This field start with 'M'");
-					}
-				}
-				
-				if(option == 'last name'){
-					if(newValue.length < 5 || newValue.length > 10){
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr align="center" style="font-size: 18px">
+						<td scope="col"><strong>First Name</strong></td>
+						<td scope="col"><strong>Last Name</strong></td>
+						<td scope="col"><strong>Age</strong></td>
+						<td scope="col"><strong>Action</strong></td>
+					</tr>
+				</thead>
+				<tbody data-bind="foreach: userCondition">
+					<tr data-bind="click: $parent.selectUser" align="center">
+						<td data-bind="text: firstName"></td>
+						<td data-bind="text: lastName"></td>
+						<td data-bind="text: age"></td>
+						<td><button class="btn btn-danger" data-bind="click: $parent.removeUser">Remove</button></td>
+					</tr>
+				</tbody>
+				<tfoot style="background-color:#d9edf7">
+					<tr>
+						<td colspan="4" align="center">
+							<i>Total Ages: </i><strong data-bind="text: sumAgeAvailableList"></strong>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+
+		</div>
+
+		<div class="panel panel-danger" style="float: right; margin-top: 2%; width:48%">
+			<div class="panel-heading">
+				<h3>Removed Person List</h3>
+			</div>
+			<table class="table table-striped table-hover">
+				<thead>
+					<tr align="center" style="font-size: 18px">
+						<td scope="col"><strong>First Name</strong></td>
+						<td scope="col"><strong>Last Name</strong></td>
+						<td scope="col"><strong>Age</strong></td>
+						<td scope="col"><strong>Action</strong></td>
+					</tr>
+				</thead>
+				<tbody data-bind="foreach: removeUserList">
+					<tr align="center">
+						<td data-bind="text: firstName"></td>
+						<td data-bind="text: lastName"></td>
+						<td data-bind="text: age"></td>
+						<td><button class="btn btn-danger" data-bind="click: $parent.undoUser">Undo</button></td>
+					</tr>
+				</tbody>
+				<tfoot style="background-color:#f2dede">
+					<tr>
+						<td colspan="4" align="center">
+							<i>Total Ages: </i><strong data-bind="text: sumAgeRemoveList"></strong>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+		<div style="width:48%">
+			<label for="basic-url" style="font-size: 20px; color: blue">Person Info</label>
+			<div class="input-group">
+				<input type="text" class="form-control" placeholder="Choose user" aria-describedby="basic-addon2"
+					data-bind="value: selectedItem().firstName, valueUpdate: 'afterkeydown'">
+				<span class="input-group-addon" id="basic-addon1">First Name</span>
+			</div>
+			<span
+				data-bind='visible: selectedItem().firstName.hasError, text: selectedItem().firstName.validationMessage'></span>
+			<br>
+			<div class="input-group">
+				<input type="text" class="form-control" placeholder="Choose user" aria-describedby="basic-addon2"
+					data-bind="value: selectedItem().lastName, valueUpdate: 'afterkeydown'">
+				<span class="input-group-addon" id="basic-addon2">Last Name</span>
+			</div>
+			<span
+				data-bind='visible: selectedItem().lastName.hasError, text: selectedItem().lastName.validationMessage'></span>
+			<br>
+			<div class="input-group">
+				<input type="text" class="form-control" aria-describedby="basic-addon2" placeholder="Choose user"
+					data-bind="value: selectedItem().age, valueUpdate: 'afterkeydown'">
+				<span class="input-group-addon" id="basic-addon3">User's Age</span>
+			</div>
+			<span data-bind='visible: selectedItem().age.hasError, text: selectedItem().age.validationMessage'></span>
+			<br>
+			<label for="basic-url" style="font-size: 20px; color:blue">Introduce</label>
+			<div class="input-group">
+				<span class="input-group-addon" id="basic-addon4">Status</span>
+				<input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3" readonly
+					data-bind="value: fullName">
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	ko.extenders.logChange = function (target, option) {
+		target.hasError = ko.observable(false);
+		target.validationMessage = ko.observable(false);
+		function validate(newValue) {
+			if (option == 'fName') {
+				if (newValue.charAt(0) == 'M') {
+					if (newValue.length < 5 || newValue.length > 10) {
 						target.hasError(true);
 						target.validationMessage("Length is 5 - 10 char!");
-					}else{
-						target.hasError(false);
-						target.validationMessage("");
 					}
-				}
-				
-				if(option == 'age'){
-					if(parseInt(newValue) == 0 || parseInt(newValue) > 99){
-						target.hasError(true);
-						target.validationMessage("this field is between 1 -99");
-					}else{
-						target.hasError(false);
-						target.validationMessage("");
-					}
+				} else {
+					target.hasError(true);
+					target.validationMessage("This field start with 'M'");
 				}
 			}
-			validate(target());
-			target.subscribe(validate);
-			return target;
-		}
-		function createUser(firstName, lastName, age) {
-			var self = this;
-			self.firstName = ko.observable(firstName).extend({logChange: "first name"});
-			self.lastName = ko.observable(lastName).extend({logChange: "last name"});
-			self.age = ko.observable(age).extend({logChange: "age"});
-		}
 
-		function sumAge(array) {
-			let sumValue = 0;
-			array().forEach(item => {
-				sumValue += parseInt(item.age());
-			});
-			return sumValue;
-		}
-
-		function ViewModel() {
-			var self=this;
-			// Declare observable ↓↓↓
-			self.userCondition = ko.observableArray();
-			self.removeUserList = ko.observableArray();
-			self.saveItem = ko.observableArray();
-			
-			self.sumAgeAvailableList = ko.pureComputed({
-				read: function () {
-					return sumAge(self.userCondition);
-				},
-				write: function (value) {
-					return value;
-				},
-				owner: this
-			});
-			self.sumAgeRemoveList = ko.pureComputed({
-				read: function () {
-					return sumAge(self.removeUserList);
-				},
-				write: function (value) {
-					return value;
-				},
-				owner: this
-			});
-
-			self.fName = ko.observable("");
-			self.lName  = ko.observable("");
-			self.iAge = ko.observable("");
-			self.teenOrRetire = ko.observable("");
-
-			self.fullName = ko.pureComputed({
-				read: function () {
-					if (typeof self.fName() == 'function' && typeof self.lName() == 'function') {
-						return self.fName()() + " " + self.lName()() + " is";
-					}
-				},
-				write: function (value) {
-					return value;
-				},
-				owner: this
-			});
-
-			// Display data ↓↓↓
-			user.forEach(user => {
-				let randomAge = Math.floor(Math.random() * 99) + 1;
-
-				// Filter user with fullname length bigger than 12 and firstName begin with 'M' ↓↓↓
-				if (user.firstName.length + user.lastName.length > 12 && user.firstName.charAt(0) == "M") {
-					self.userCondition.push(new createUser(user.firstName, user.lastName, randomAge));
-					self.sumAgeAvailableList(sumAge(self.userCondition));
+			if (option == 'lName') {
+				if (newValue.length < 5 || newValue.length > 10) {
+					target.hasError(true);
+					target.validationMessage("Length is 5 - 10 char!");
+				} else {
+					target.hasError(false);
+					target.validationMessage("");
 				}
-			});
-
-			// Select ↓↓↓
-			self.select = function (user) {
-				<!-- self.selectedUser(user); -->
-				<!-- self.selectedUser().fName(); -->
-				self.fName(user.firstName);
-				self.lName(user.lastName);
-				self.iAge(user.age);
-				self.saveItem(user);
-				self.fullName(user.firstName + " " + user.lastName);
-
-				if (user.age() >= 62)
-					self.teenOrRetire("Retired ");
-				else if (user.age() >= 13 && user.age() <= 19)
-					self.teenOrRetire("Teenage");
-				else if (user.age() < 13)
-					self.teenOrRetire("Kid");
-				else
-					self.teenOrRetire("Adult");
 			}
 
-			// Remove ↓↓↓
-			self.remove = function (user) {
-				self.userCondition.remove(user);
-				self.removeUserList.push(user);
-
-				self.sumAgeAvailableList(sumAge(self.userCondition));
-
-				self.sumAgeRemoveList(sumAge(self.removeUserList));
-
+			if (option == 'age') {
+				let checkNull = parseInt(newValue);
+				if (parseInt(newValue) < 1 || parseInt(newValue) > 99) {
+					target.hasError(true);
+					target.validationMessage("This field is between 1 - 99");
+				} else {
+					target.hasError(false);
+					target.validationMessage("");
+				}
 			}
-
-			// Undo ↓↓↓
-			self.undo = function (user) {
-				self.removeUserList.remove(user);
-				self.userCondition.push(user);
-
-				self.sumAgeAvailableList(sumAge(self.userCondition));
-
-				self.sumAgeRemoveList(sumAge(self.removeUserList));
-
-			}
-			
 		}
 
-		// Data
-		var user = [
+
+		validate(target());
+
+		target.subscribe(validate);
+
+		return target;
+	}
+	//Fake constructor
+	function createUser(firstName, lastName, age) {
+		this.firstName = ko.observable(firstName).extend({ logChange: "fName" });
+		this.lastName = ko.observable(lastName).extend({ logChange: "lName" });
+		this.age = ko.observable(age).extend({ logChange: "age" });
+	}
+	//Get Data
+	var filterArray = function () {
+		var self = this;
+		this.sourceArray = [
 			{ firstName: 'Emilia', lastName: 'Mcintyre' },
 			{ firstName: 'Shiya', lastName: 'Babb' },
 			{ firstName: 'Marcial', lastName: 'Bise' },
@@ -289,19 +204,110 @@
 			{ firstName: 'Nikkita', lastName: 'Mcfarland' },
 			{ firstName: 'Mckayla', lastName: 'Benavidez' },
 		];
-		ko.applyBindings(new ViewModel());
-		
-		
-		
-		// <!-- M2.KO = { -->
-		// 	<!-- this.Array: [], -->
-		// 	<!-- this.ViewModel: function(object) { -->
-		// 		<!-- return 1; -->
-		// 	<!-- }, -->
-		// <!-- }; -->
-		
-		
-		
-    </script>
-</body>
-</html>
+		this.filterArray = [];
+		this.sourceArray.forEach(item => {
+			let randomAge = Math.floor(Math.random() * 99) + 1;
+			// Filter user with fullname length bigger than 12 and firstName begin with 'M' ↓↓↓
+			if (item.firstName.length + item.lastName.length > 12 && item.firstName.charAt(0) == "M") {
+				self.filterArray.push(new createUser(item.firstName, item.lastName, randomAge));
+			}
+		});
+		return this.filterArray;
+	}
+	//Sum Age Available
+	var totalAge = function (array) {
+		var sumValue = 0;
+		array().forEach(item => {
+			if (item.age()) {
+				sumValue += parseInt(item.age());
+			}
+		});
+		return sumValue;
+	}
+	//Check position
+	var position = function (removeList, object) {
+		let position = removeList.findIndex(function (item) {
+			if (item.firstName == object.firstName && item.lastName == object.lastName && item.age == object.age) {
+				return true;
+			}
+		});
+		return position;
+	}
+	//Push or Remove observableArray
+	function exChange(removeList, pushList, object) {
+		removeList.remove(object);
+		pushList.push(object);
+	}
+	//return rank of user
+	var rank = function (age) {
+		var rankUser = " ";
+		if (age > 62) {
+			rankUser = "Retired";
+		}
+		if (age < 15) {
+			rankUser = "Teenage";
+		}
+		if (age >= 15 && age <= 62) {
+			rankUser = "Adult";
+		}
+		return rankUser;
+	}
+
+	//View Model
+	var ViewModel = {
+		//Declare
+		userCondition: ko.observableArray(filterArray()),
+		removeUserList: ko.observableArray([]),
+		selectedItem: ko.observable(new createUser('Choose user!', 'Choose user!', 0)),//.extend({required: true}),
+
+		//sum age of Available User List
+		sumAgeAvailableList: ko.pureComputed({
+			read: function () {
+				return totalAge(ViewModel.userCondition);
+			},
+			write: function (value) {
+				return value;
+			},
+			owner: this
+		}),
+
+		////sum age of Available User List
+		sumAgeRemoveList: ko.pureComputed({
+			read: function () {
+				return totalAge(ViewModel.removeUserList);
+			},
+			write: function (value) {
+				return value;
+			},
+			owner: this
+		}),
+		//show full name
+		fullName: ko.pureComputed({
+			read: function () {
+				if (ViewModel.selectedItem().firstName() == 'Choose user!') {
+					return "No infomation";
+				} else {
+					return ViewModel.selectedItem().firstName() + " " + ViewModel.selectedItem().lastName() + " is " + rank(ViewModel.selectedItem().age());
+				}
+			},
+			write: function (value) {
+				return value;
+			},
+			owner: this
+		}),
+		//feature of list
+		removeUser: function (item) {
+			exChange(ViewModel.userCondition, ViewModel.removeUserList, item);
+		},
+		undoUser: function (item) {
+			exChange(ViewModel.removeUserList, ViewModel.userCondition, item);
+		},
+		selectUser: function (item) {
+			ViewModel.selectedItem(item);
+			ViewModel.fullName(ViewModel.selectedItem().firstName + " " + ViewModel.selectedItem().lastName + " is " + rank(ViewModel.selectedItem().age()));
+		}
+	}
+
+
+	ko.applyBindings(ViewModel);
+</script>
